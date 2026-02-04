@@ -92,6 +92,31 @@ These tools are required for working with Luther infrastructure. See [SETUP_ENV.
 - `kns` / `setkns` — Kubectl with namespace management
 - `vpn` — `mosh luther-vpn -- tmux new-session -A -s main`
 
+## CLI Tools Available
+
+Modern Rust/Go replacements are installed. Prefer these over legacy equivalents:
+
+| Use this | Instead of | Notes |
+|----------|-----------|-------|
+| `rg` (ripgrep) | `grep` | 10-100x faster, respects `.gitignore` |
+| `fd` | `find` | Simpler syntax: `fd '\.go$'` |
+| `bat` | `cat` | Syntax highlighting, line numbers |
+| `eza` | `ls` | Git status, tree view (`eza --tree`) |
+| `delta` | `diff` | Syntax-highlighted git diffs (configured as git pager) |
+| `sd` | `sed` | Simpler: `sd 'from' 'to' file` |
+| `dust` | `du` | Visual disk usage tree |
+| `fzf` | — | Fuzzy finder (`Ctrl+R` history, `Ctrl+T` files) |
+| `zoxide` | `cd` | Frecency-based: `z proj` jumps to project dir |
+| `lazygit` | — | Terminal UI for git |
+| `lazydocker` | — | Terminal UI for Docker |
+| `jq` / `yq` | — | JSON / YAML processing |
+| `tree` | — | Directory tree view |
+
+**Kubernetes helpers** (from `luther-shell-helpers`):
+- `setkns <namespace>` — Set default kubectl namespace
+- `kns` — Show current namespace
+- `kns <command>` — Run kubectl with namespace preset (e.g., `kns get pods`)
+
 ## Agent Compatibility (agent.md / CLAUDE.md)
 
 - When a project uses `agent.md` (e.g., for Kiro, Cursor, Windsurf, or other AI tools), symlink it to `CLAUDE.md` so all agents share the same instructions: `ln -sf CLAUDE.md agent.md` (or vice versa)
