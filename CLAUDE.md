@@ -68,6 +68,30 @@ The following skills are bundled in this config and installed globally via `setu
 **Project-specific skills** (not bundled here — live in their own repos):
 - `reddit` — Daily Reddit engagement workflow (lives in `iamsamwood/bd`)
 
+## Luther Dev Tooling
+
+These tools are required for working with Luther infrastructure. See [SETUP_ENV.md](SETUP_ENV.md) for full install instructions.
+
+| Tool | Install | Purpose |
+|------|---------|---------|
+| `speculate` | `go install github.com/akerl/speculate/v2@latest` | AWS role assumption with MFA |
+| `aws-cred-setup` | `luthersystems/aws-cred-setup` | Configure AWS MFA credentials |
+| `luther-shell-helpers` | `luthersystems/luther-shell-helpers` | `aws_login`, `aws_jump`, `credcopy/credpaste`, `kns` |
+| `mars` | `luthersystems/mars` | Terraform/Ansible/Packer in Docker |
+| `switch_accounts.sh` | `luthersystems/shell-scripts` | GitHub account switching (`luther`/`toko`) |
+| `firecrawl` | `npm install -g firecrawl-cli` | Web scraping and search |
+| `mosh` + `tmux` | brew/apt | Persistent VPN shell sessions |
+| `tailscale` | tailscale.com | VPN mesh network (`vpn` alias) |
+
+**Key shell functions** (from `luther-shell-helpers`):
+- `aws_login <role>` — MFA-secured AWS session (default role: `dev`)
+- `aws_jump <account> <role>` — Assume role in another account (uses `~/.aws/accounts` map)
+- `aws_console <account>` — Open AWS console in browser for an account
+- `credcopy` / `credpaste` — Copy/paste AWS creds via clipboard
+- `credhop` / `creddrop` — Stack-based role switching
+- `kns` / `setkns` — Kubectl with namespace management
+- `vpn` — `mosh luther-vpn -- tmux new-session -A -s main`
+
 ## Agent Compatibility (agent.md / CLAUDE.md)
 
 - When a project uses `agent.md` (e.g., for Kiro, Cursor, Windsurf, or other AI tools), symlink it to `CLAUDE.md` so all agents share the same instructions: `ln -sf CLAUDE.md agent.md` (or vice versa)
