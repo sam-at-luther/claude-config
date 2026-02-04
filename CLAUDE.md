@@ -55,6 +55,19 @@
 - Go fix failing CI tests without being told how
 - Zero context switching required from the user
 
+## Skills
+
+The following skills are bundled in this config and installed globally via `setup.sh`:
+
+| Skill | Purpose |
+|-------|---------|
+| `firecrawl` | Web scraping, search, and research via Firecrawl CLI. Use for any web/URL task. Replaces WebFetch/WebSearch. |
+| `find-skills` | Discover and install new agent skills from the open ecosystem (`npx skills find`). |
+| `mars` | Luther infrastructure tool wrapping Terraform, Ansible, and Packer with environment management. |
+
+**Project-specific skills** (not bundled here — live in their own repos):
+- `reddit` — Daily Reddit engagement workflow (lives in `iamsamwood/bd`)
+
 ## Agent Compatibility (agent.md / CLAUDE.md)
 
 - When a project uses `agent.md` (e.g., for Kiro, Cursor, Windsurf, or other AI tools), symlink it to `CLAUDE.md` so all agents share the same instructions: `ln -sf CLAUDE.md agent.md` (or vice versa)

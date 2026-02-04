@@ -23,16 +23,21 @@ else
     ln -sf "$SCRIPT_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 fi
 
-# Symlink skills
+# Symlink skills (force-update to point at this repo)
 for skill_dir in "$SCRIPT_DIR/skills"/*/; do
     [ -d "$skill_dir" ] || continue
     skill_name="$(basename "$skill_dir")"
     target="$CLAUDE_DIR/skills/$skill_name"
-    if [ -e "$target" ]; then
-        echo "Skill already exists, skipping: $skill_name"
+    if [ -L "$target" ]; then
+        echo "Updating skill symlink: $skill_name"
+        ln -sfn "$skill_dir" "$target"
+    elif [ -d "$target" ]; then
+        echo "WARNING: $skill_name exists as a directory, backing up to ${target}.bak"
+        mv "$target" "${target}.bak"
+        ln -sfn "$skill_dir" "$target"
     else
         echo "Linking skill: $skill_name"
-        ln -sf "$skill_dir" "$target"
+        ln -sfn "$skill_dir" "$target"
     fi
 done
 

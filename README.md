@@ -7,7 +7,9 @@ Common Claude Code configuration, skills, and guidance for use across all projec
 | Path | Purpose |
 |------|---------|
 | `CLAUDE.md` | Global instructions — symlink to `~/.claude/CLAUDE.md` |
-| `skills/` | Shared Claude Code skills |
+| `skills/firecrawl/` | Web scraping, search, and research via Firecrawl CLI |
+| `skills/find-skills/` | Discover and install skills from the open ecosystem |
+| `skills/mars/` | Luther infrastructure tool (Terraform/Ansible/Packer) |
 | `setup.sh` | One-command install script |
 
 ## Quick Setup
