@@ -97,6 +97,16 @@ Organize into subdirectories when it makes sense for the task:
 
 ## Commands
 
+**IMPORTANT: Always quote URLs** with double quotes when passing them to firecrawl via Bash. URLs containing `?`, `&`, `=`, or other special characters will be mangled by the shell (zsh glob expansion) if unquoted:
+
+```bash
+# CORRECT - quoted URL
+firecrawl scrape "https://example.com/page?v=123&lang=en" -o .firecrawl/page.md
+
+# WRONG - shell will mangle the ? and & characters
+firecrawl scrape https://example.com/page?v=123&lang=en -o .firecrawl/page.md
+```
+
 ### Search - Web search with optional scraping
 
 ```bash

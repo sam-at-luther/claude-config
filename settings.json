@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(ls:*)",
+      "Bash(ln:*)",
+      "Bash(mkdir:*)",
+      "Bash(rm:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(xargs:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(du:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(make:*)",
+      "Bash(mars:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(go:*)",
+      "Bash(gofmt:*)",
+      "Bash(golangci-lint:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(uv:*)",
+      "mcp__insideout*"
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir // .cwd'); if [ -n \"$cwd\" ] && [ -d \"$cwd/.git\" ]; then cd \"$cwd\" 2>/dev/null; fi; branch=$(git -c core.filesRefLockTimeout=0 branch --show-current 2>/dev/null || echo ''); if [ -n \"$branch\" ]; then printf '⎇ %s' \"$branch\"; fi"
+  },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "voicemode@voicemode": true
+  }
+}

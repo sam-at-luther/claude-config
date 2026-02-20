@@ -40,6 +40,10 @@
 - Find root causes. No temporary fixes. Senior developer standards.
 - Changes should only touch what's necessary. Avoid introducing bugs.
 
+## Temporary Files
+
+When you need scratch space for temporary files, create a `.tmp/` directory in the project root and use that. Add `.tmp/` to the project's `.gitignore` if it isn't already.
+
 ## Self-Improvement Loop
 
 - After ANY correction from the user, update `tasks/lessons.md` in the project root with the pattern
@@ -61,9 +65,22 @@ The following skills are bundled in this config and installed globally via `setu
 
 | Skill | Purpose |
 |-------|---------|
-| `firecrawl` | Web scraping, search, and research via Firecrawl CLI. Use for any web/URL task. Replaces WebFetch/WebSearch. |
+| `create-repo-skills` | Generate Claude Code skills for any repository from its structure, CI, and conventions. |
+| `email` | View, draft, and send emails using the `zele` CLI (Gmail). |
+| `firecrawl` | Web scraping, search, and research via Firecrawl CLI. Use for any web/URL task. |
 | `find-skills` | Discover and install new agent skills from the open ecosystem (`npx skills find`). |
+| `golang-guidance` | Load Go best practices for idiomatic types, errors, generics, and testing. |
+| `grind` | Automatically process `agent-ready` GitHub issues: claim → implement → PR. Loops for a duration. |
 | `mars` | Luther infrastructure tool wrapping Terraform, Ansible, and Packer with environment management. |
+| `pr` | Create PR with local tests, security review, and QA professor on test quality. |
+| `release` | Deploy to production via Vercel/MCP server. Tags, monitors, verifies health. |
+| `repo-setup` | Full repository onboarding: deep scan → CLAUDE.md → tailored skills. Run once per repo. |
+
+**Also bundled:**
+- `agents/qa-professor.md` — QA professor agent for test quality review
+- `commands/dailire-mode-analysis.md` — Run 7 parallel failure mode analyses
+- `golang-guidance.md` — Standalone Go best practices reference (18KB)
+- `settings.json` — Default permissions, plugins, and status line config
 
 **Project-specific skills** (not bundled here — live in their own repos):
 - `reddit` — Daily Reddit engagement workflow (lives in `iamsamwood/bd`)
