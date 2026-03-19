@@ -103,7 +103,89 @@ type Store struct {
 }
 ```
 
-## 4. Modern Patterns
+## 4. Function Parameter Hygiene
+
+When functions accumulate too many parameters (generally 4+), especially if you keep adding arguments over time, this is a code smell. Refactor using one of these strategies:
+
+### Argument Structs
+
+Group related parameters into a struct passed by value or pointer. Call sites become self-documenting, and adding new fields is a non-breaking change.
+
+**API Stability Rule:** For any public function whose parameter list is likely to evolve (e.g., configuration, options, location descriptors, query parameters), use a struct from the start — even if the initial parameter count is small. Adding a field to a struct is a backwards-compatible change; adding a parameter to a function signature breaks every caller. This is especially critical for functions called from multiple packages or exposed as part of a library API.
+
+```go
+// Bad: every new field breaks all callers
+func ShouldPause(depth int, file string, line int) bool
+// Later: func ShouldPause(depth int, file string, line int, macroID int64) bool  // breaking!
+
+// Good: struct absorbs new fields without breaking callers
+type StepLocation struct {
+    Depth   int
+    File    string
+    Line    int
+    MacroID int64  // added later — zero value is backwards-compatible
+}
+
+func ShouldPause(loc StepLocation) bool
+```
+
+```go
+// Bad: 10 positional args, impossible to read at call sites
+func storeSessionCredentials(ctx context.Context, db *sql.DB, sessionID, cloud string,
+    ciphertext, nonce []byte, region string, vaultCredentialID *int,
+    authMethod, awsExternalID string) error
+
+// Good: argument struct, self-documenting call sites
+type StoreSessionCredsParams struct {
+    SessionID         string
+    Cloud             string
+    Ciphertext        []byte
+    Nonce             []byte
+    Region            string
+    VaultCredentialID *int
+    AuthMethod        string
+    AWSExternalID     string
+}
+
+func storeSessionCredentials(ctx context.Context, db *sql.DB, p StoreSessionCredsParams) error
+```
+
+### Method Receivers for Repeated Dependencies
+
+When a function always takes the same "context" args (db, config, etc.), make it a method on a struct that holds those dependencies:
+
+```go
+type CredentialStore struct {
+    DB  *sql.DB
+    Key []byte
+}
+
+func (s *CredentialStore) StoreForSession(ctx context.Context, p StoreSessionCredsParams) error
+```
+
+### Rule of Thumb
+
+`ctx` and a single receiver don't count toward the limit. After those, if you have 4+ parameters, use a struct. If you find yourself adding a new parameter to an existing function and touching 5+ call sites, that's the signal to refactor to a struct first.
+
+### Return Values
+
+Limit return values to **2** (value + error). When a function needs to return more than two things, return a struct instead. Multiple positional returns are hard to read at call sites and easy to misassign.
+
+```go
+// Bad: 3+ positional returns — callers must remember order
+func resolve(ctx context.Context, id string) (string, *Run, error)
+
+// Good: struct groups related values, call sites are self-documenting
+type ResolveResult struct {
+    ProjectID string
+    Run       *Run
+}
+func resolve(ctx context.Context, id string) (ResolveResult, error)
+```
+
+The `(T, error)` and `(T, bool)` two-return patterns are idiomatic Go. Beyond that, use a struct.
+
+## 5. Modern Patterns
 
 ### Functional Options Pattern
 
@@ -151,7 +233,7 @@ Know the difference between creating a new type and an alias.
 - **Type Definition** (`type MyInt int`): Creates a brand new type. It does not inherit methods of the underlying type. Useful for adding type safety or methods to primitives.
 - **Type Alias** (`type MyInt = int`): (Go 1.9+) Just a new name for the same type. Useful only for refactoring (moving types between packages) to maintain compatibility. Avoid using aliases for general logic.
 
-## 5. Safety & "Magic" Tricks
+## 6. Safety & "Magic" Tricks
 
 ### Compile-Time Interface Check
 
@@ -192,7 +274,7 @@ func (c *Counter) Inc() {
 }
 ```
 
-## 6. Receivers: Value vs. Pointer
+## 7. Receivers: Value vs. Pointer
 
 When defining methods on your types, choose the receiver carefully.
 
@@ -204,13 +286,13 @@ When defining methods on your types, choose the receiver carefully.
 | Concurrency/Sync | Pointer (`s *MyStruct`) | CRITICAL: Never copy a struct containing a Mutex. |
 | Consistency | Mixed | Try not to mix receiver types on a single struct. If one method needs a pointer, use pointers for all. |
 
-## 7. Anti-Patterns to Avoid
+## 8. Anti-Patterns to Avoid
 
 - **Interface Pollution:** Don't define interfaces before you need them. Defining an interface for every struct "just in case" leads to unnecessary abstraction.
 - **Exported Fields in Unexported Structs:** This is confusing. If the struct is private (type config struct), its fields generally shouldn't be exported unless used for something like JSON unmarshaling where the struct is passed to a public function.
 - **Returning Interfaces:** As mentioned in section 1, avoid returning interfaces from functions. It forces the user to use that specific abstraction and hides the underlying data structure, making it harder to extend later.
 
-## 8. Named vs. Anonymous Types
+## 9. Named vs. Anonymous Types
 
 Go allows you to use anonymous types (like `map[string]int`, `[]string`, or `struct{ Name string }`) or define named types (type `UserMap map[string]int`).
 
@@ -242,7 +324,7 @@ var data struct {
 json.Unmarshal(bytes, &data)
 ```
 
-## 9. Error Handling
+## 10. Error Handling
 
 Errors are values in Go. The `error` type is a one-method interface (`Error() string`), and idiomatic error handling is central to writing good Go.
 
@@ -261,7 +343,20 @@ if err != nil {
 f, _ := os.Open(path)
 ```
 
-The only acceptable exception is when a function's error is truly inconsequential (e.g., `fmt.Fprintf` to an `http.ResponseWriter` during cleanup where the connection is already closing). In those cases, assign to `_` and add a comment explaining why.
+**If you must drop an error, always log it first.** Never silently assign to `_` without logging — silent drops hide bugs that surface hours later in production. The only exception is when the error is truly inconsequential AND the function is called so frequently that logging would be noise (e.g., `fmt.Fprintf` to an `http.ResponseWriter` during cleanup where the connection is already closing). In those rare cases, assign to `_` and add a comment explaining why.
+
+```go
+// Good: logging before dropping
+if err := cleanup(); err != nil {
+    log.Printf("WARNING: cleanup failed (non-fatal): %v", err)
+}
+
+// Acceptable ONLY with comment: truly inconsequential
+_ = w.Write([]byte("ok")) // best-effort response, connection may be closing
+
+// Bad: silent drop — hides bugs
+_ = os.Remove(tmpFile)
+```
 
 ### Wrapping Errors
 
@@ -339,7 +434,7 @@ if errors.As(err, &ve) {
 - Error types: `Error` suffix (`ValidationError`, `TimeoutError`).
 - Never name an error variable `err` at package scope — `err` is reserved for local use.
 
-## 10. Enums with `const` + `iota`
+## 11. Enums with `const` + `iota`
 
 Go has no enum keyword. Use typed constants with `iota` for type-safe enumerations.
 
@@ -377,7 +472,7 @@ const (
 )
 ```
 
-## 11. Generics (Go 1.18+)
+## 12. Generics (Go 1.18+)
 
 Use generics to eliminate duplicated logic across types, not as a replacement for interfaces.
 
@@ -426,7 +521,7 @@ func Sum[T Number](values []T) T {
 }
 ```
 
-## 12. Testing with Testify
+## 13. Testing with Testify
 
 Use the `github.com/stretchr/testify` package to simplify test assertions and reduce boilerplate. Testify provides clear failure messages, reduces `if`/`t.Errorf` noise, and makes test intent more obvious.
 
@@ -497,3 +592,62 @@ for _, tt := range tests {
     })
 }
 ```
+
+## 14. Testability
+
+Design code so it can be driven entirely from Go tests without manual interaction.
+
+### Never Call `os.Exit` in Library Code
+
+Functions that call `os.Exit` cannot be tested — they kill the test process. Push exit decisions to `main()` or CLI entry points. Library code should return errors or signal completion through channels.
+
+```go
+// Bad: untestable — kills the test runner
+func (h *handler) doQuit() {
+    os.Exit(0)
+}
+
+// Good: testable — signals the caller to stop
+func (h *handler) doQuit() {
+    close(h.doneCh) // caller's event loop checks this
+}
+```
+
+### Accept `io.Reader`/`io.Writer` for I/O
+
+Functions that read stdin or write to stderr should accept `io.Reader`/`io.Writer` parameters (or use functional options like `WithStdin`, `WithStderr`). This lets tests inject `io.Pipe`, `bytes.Buffer`, or `strings.Reader` to drive the code the same way a terminal would.
+
+```go
+// Good: test can pipe commands through stdin and capture output
+func Run(opts ...Option) error { ... }
+
+func TestRun(t *testing.T) {
+    inR, inW := io.Pipe()
+    go func() {
+        defer inW.Close()
+        io.WriteString(inW, "help\nquit\n")
+    }()
+    var stderr bytes.Buffer
+    err := Run(WithStdin(inR), WithStderr(&stderr))
+    require.NoError(t, err)
+    assert.Contains(t, stderr.String(), "help output")
+}
+```
+
+### Provide Shutdown Hooks
+
+Interactive loops (REPLs, servers, watchers) need a clean shutdown path for tests. Use a `done` channel, context cancellation, or similar mechanism so tests can stop the loop without killing the process.
+
+### Avoid Global State
+
+Functions that depend on global variables, `init()` side effects, or package-level registries are hard to test in parallel. Pass dependencies explicitly — through constructors, method receivers, or functional options.
+
+## 15. Principle of Least Surprise
+
+Design APIs, tools, and endpoints so callers get exactly what they expect from the name and signature.
+
+- **Separate concerns by use case.** Don't overload one endpoint with flags to serve multiple purposes. If `dump` is for metadata overview and `last-messages` is for content inspection, keep them as distinct actions rather than adding a `include_content` flag to `dump`.
+- **Default to the safe/lightweight option.** When a parameter controls output size, the default should produce the smaller response. Users opt *in* to more data, not opt *out*. Example: `limit=10` by default, not `limit=all`.
+- **Match expectations from the name.** An action called `dump` that returns no content is surprising. An action called `dump` that returns 688K of structured data is also surprising. Name and scope actions so the output volume and shape match what the name implies.
+- **Avoid context blowup in tool/agent APIs.** In MCP and LLM tool contexts, large structured outputs blow up agent context windows. Prefer truncation, pagination, and filtering over returning everything. Return summaries by default; let callers request detail explicitly.
+- **When in doubt, add a new action.** A second focused endpoint is cheaper to maintain than a single endpoint with branching behavior that surprises half its callers.
