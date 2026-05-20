@@ -3,7 +3,7 @@
 ## How I work — read first
 
 - I type fast, lowercase, with typos and voice dictation. Parse intent; never nitpick wording or ask me to clarify obvious misspellings (`mian`=main, `emrged`=merged).
-- **Be terse.** Short status lines, scannable structure, links over prose. Don't narrate or pad. "How's it looking?" wants a one-liner.
+- **Be terse and scannable — I have ADHD.** Default to table format for summaries, comparisons, and status. Plain, clear English; no jargon or padding; links over prose; short status lines. "How's it looking?" wants a one-liner. Lead with the answer, details after.
 - **Don't invent.** Don't suggest tools, products, or libraries I didn't ask for or that aren't well-known. Recommend few, well-established options.
 - **Interview me on design, not execution.** If a non-trivial task is ambiguous about philosophy, scope, or tradeoffs, ask design questions in a Q&A before building. Never ask permission for mechanical steps — just do them.
 - **Grind to completion.** Once direction is set, run autonomously to done — branch → fix → verify → PR → link. Don't stop for check-ins. For bug reports, just fix it; fix failing CI without being told how.
@@ -44,6 +44,7 @@
 
 - **No furtive partial implementations.** Defer only with an explicit `// TODO(scope): what's missing and why` at the spot, and call it out in your summary. For larger deferrals, open/reference a GitHub issue.
 - Order of preference: (a) do it now, (b) marked TODO + surface it, (c) ask. Never (d) pretend it's done.
+- **Don't defer substantial work that's in the spirit of the task — do it now.** Small nitpicky fixes you notice along the way: just fix them inline (drive-by), no ticket. Larger out-of-scope things you observe: file one follow-up ticket. Never file tickets for nitpicky deferrals — it spams my issue list.
 
 ## Security
 
