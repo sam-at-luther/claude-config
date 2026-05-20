@@ -45,7 +45,7 @@
 - **No furtive partial implementations.** Defer only with an explicit `// TODO(scope): what's missing and why` at the spot, and call it out in your summary. For larger deferrals, open/reference a GitHub issue.
 - Order of preference: (a) do it now, (b) marked TODO + surface it, (c) ask. Never (d) pretend it's done.
 - **Don't defer substantial work that's in the spirit of the task — do it now.** Small nitpicky fixes you notice along the way: just fix them inline (drive-by), no ticket. Larger out-of-scope things you observe: file one follow-up ticket. Never file tickets for nitpicky deferrals — it spams my issue list.
-- **See something, say something.** When you spot a preexisting bug, risk, or code smell while working — even if unrelated to the task — flag it. Don't silently pass it by. Then apply the rule above: fix tiny ones inline, ticket the larger ones.
+- **See something, say something — for substantial issues only.** When you spot a *substantial* preexisting problem while working — a real bug, security/correctness risk, or meaningful design flaw — flag it, even if unrelated to the task, and ticket it. Don't report trivial nits or style quibbles; I don't want noise.
 
 ## Security
 
