@@ -25,7 +25,7 @@
 - Force-pushing a feature branch with an open PR is fine for WIP iteration — prefer `--force-with-lease`.
 - Always branch off `main` first. Use `feature/`/`fix/`/`refactor/`/`docs/` prefixes.
 - **Before touching any PR: `git fetch` and rebase off latest `origin/main`. Check whether the branch/PR was already merged before acting.**
-- **Bundle related fixes into ONE PR.** Don't fragment work into many follow-up PRs. If I raise several issues in a session, file a ticket each but deliver the fixes in a single bundle PR I can test together. Phases are fine inside one PR.
+- **Bundle related fixes into ONE PR, but one commit per work item.** Don't fragment work into many follow-up PRs. If I raise several issues in a session, file a ticket each but deliver the fixes in a single bundle PR I can test together. Phases are fine inside one PR. Keep each distinct work item as its own commit so individual changes can be reverted or bisected cleanly.
 - File issues in the correct repo. If a problem belongs to another repo, file the ticket there rather than patching in place.
 - Every ticket gets a GitHub issue. PR body references each (`Closes #N`); partial work updates the issue checklist instead.
 - Run the `pr` skill (rebase, QC gates) and `qa-professor` on PRs without being reminded. **End every task by linking the PR/URL.**
