@@ -1,143 +1,67 @@
 # Global Claude Code Instructions
 
-## Workflow Orchestration
+## How I work — read first
 
-- Enter plan mode for any non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately — don't keep pushing
-- Use subagents liberally for research, exploration, and parallel analysis
-- One task per subagent for focused execution
-- Break work into small, digestible components/tasks with corresponding tests
+- I type fast, lowercase, with typos and voice dictation. Parse intent; never nitpick wording or ask me to clarify obvious misspellings (`mian`=main, `emrged`=merged).
+- **Be terse.** Short status lines, scannable structure, links over prose. Don't narrate or pad. "How's it looking?" wants a one-liner.
+- **Don't invent.** Don't suggest tools, products, or libraries I didn't ask for or that aren't well-known. Recommend few, well-established options.
+- **Interview me on design, not execution.** If a non-trivial task is ambiguous about philosophy, scope, or tradeoffs, ask design questions in a Q&A before building. Never ask permission for mechanical steps — just do them.
+- **Grind to completion.** Once direction is set, run autonomously to done — branch → fix → verify → PR → link. Don't stop for check-ins. For bug reports, just fix it; fix failing CI without being told how.
+- I resume interrupted work often. Keep a running task list and next-step summary so I can pick up cleanly.
 
-## Git Workflow
+## Subagents & context
 
-- **NEVER** push directly to the main/production branch
-- Always create a feature branch off the main branch before starting work
-- Use descriptive branch names: `feature/`, `fix/`, `refactor/` prefixes
-- Create a PR targeting the main branch when work is complete
-- Before creating a PR, check that all GitHub Actions CI checks pass (`gh pr checks` or `gh run list`)
-- If CI checks fail, fix the failures before requesting review
-- Keep PRs focused — one logical change per PR
+- My context window is a scarce resource. **Default to subagents/worktrees for any multi-part work, research, or exploration** — keep the main thread clean.
+- One focused task per subagent. Use background subagents and worktrees for parallel work so agents don't step on each other.
 
-## Test-Driven Approach
+## Plan mode
 
-- When possible, write a small unit test first that captures the expected behavior
-- Confirm the code passes the test before moving on
-- Run the full test suite before considering work complete
-- If a bug is reported, write a failing test that reproduces it, then fix the code
+- Enter plan mode for non-trivial tasks (3+ steps or architectural decisions).
+- If something goes sideways, STOP and re-plan — don't keep pushing.
 
-## Verification
+## Git & PRs
 
-- Never mark a task complete without proving it works
-- Run tests, check logs, demonstrate correctness
-- Diff behavior between main and your changes when relevant
-- Ask yourself: "Would a staff engineer approve this?"
+- **NEVER** push or force-push to `main`/production (no `--force`, no `--force-with-lease`).
+- Force-pushing a feature branch with an open PR is fine for WIP iteration — prefer `--force-with-lease`.
+- Always branch off `main` first. Use `feature/`/`fix/`/`refactor/`/`docs/` prefixes.
+- **Before touching any PR: `git fetch` and rebase off latest `origin/main`. Check whether the branch/PR was already merged before acting.**
+- **Bundle related fixes into ONE PR.** Don't fragment work into many follow-up PRs. If I raise several issues in a session, file a ticket each but deliver the fixes in a single bundle PR I can test together. Phases are fine inside one PR.
+- File issues in the correct repo. If a problem belongs to another repo, file the ticket there rather than patching in place.
+- Every ticket gets a GitHub issue. PR body references each (`Closes #N`); partial work updates the issue checklist instead.
+- Run the `pr` skill (rebase, QC gates) and `qa-professor` on PRs without being reminded. **End every task by linking the PR/URL.**
+- Use `gh` for remote ops; keep remotes on HTTPS so `gh auth` handles auth.
+- No orphan branches or unpushed commits — every branch has a PR (draft is fine).
 
-## Code Quality
+## Verification & quality
 
-- For non-trivial changes, pause and ask "is there a more elegant way?"
-- If a fix feels hacky, implement the elegant solution
-- Skip this for simple, obvious fixes — don't over-engineer
-- Find root causes. No temporary fixes. Senior developer standards.
-- Changes should only touch what's necessary. Avoid introducing bugs.
+- **Never mark a task done without proving it works** — real endpoints, real environments, examples/tests that actually run. No mock theatre.
+- Prefer running checks in CI over exhaustive local validation; watch CI and loop until green.
+- Find root causes — no temp fixes, no hacks. If a fix feels hacky, do the elegant one. Don't over-engineer simple fixes.
+- Changes touch only what's necessary. Would a staff engineer approve this?
+- Be ready to justify claims with evidence — I probe assertions.
 
-## Temporary Files
+## Deferred work
 
-When you need scratch space for temporary files, create a `.tmp/` directory in the project root and use that. Add `.tmp/` to the project's `.gitignore` if it isn't already.
+- **No furtive partial implementations.** Defer only with an explicit `// TODO(scope): what's missing and why` at the spot, and call it out in your summary. For larger deferrals, open/reference a GitHub issue.
+- Order of preference: (a) do it now, (b) marked TODO + surface it, (c) ask. Never (d) pretend it's done.
 
-## Self-Improvement Loop
+## Security
 
-- After ANY correction from the user, update `tasks/lessons.md` in the project root with the pattern
-- Write rules for yourself that prevent the same mistake from recurring
-- Review lessons at session start for the relevant project
-- Periodically assess whether a lesson should be promoted into the project's `CLAUDE.md` or into a skill
-- Format each lesson as: `**[date] Category:** What went wrong → What to do instead`
+- Every new API endpoint is authenticated by default — decide public vs. auth explicitly in a comment. Session endpoints verify the caller owns that session; admin/bulk endpoints sit behind admin middleware. Include an auth test case.
 
-## Bug Fixing
+## Attribution
 
-- When given a bug report: just fix it. Don't ask for hand-holding.
-- Point at logs, errors, failing tests — then resolve them
-- Go fix failing CI tests without being told how
-- Zero context switching required from the user
+- No `Co-Authored-By` lines, no "Generated with Claude Code" badges in commits or PRs.
 
-## Skills
+## Browser automation
 
-The following skills are bundled in this config and installed globally via `setup.sh`:
+- NEVER use Claude-in-Chrome tools. Always use the Agent Browser plugin (`agent-browser@agent-browser`).
 
-| Skill | Purpose |
-|-------|---------|
-| `create-repo-skills` | Generate Claude Code skills for any repository from its structure, CI, and conventions. |
-| `email` | View, draft, and send emails using the `zele` CLI (Gmail). |
-| `firecrawl` | Web scraping, search, and research via Firecrawl CLI. Use for any web/URL task. |
-| `find-skills` | Discover and install new agent skills from the open ecosystem (`npx skills find`). |
-| `golang-guidance` | Load Go best practices for idiomatic types, errors, generics, and testing. |
-| `grind` | Automatically process `agent-ready` GitHub issues: claim → implement → PR. Loops for a duration. |
-| `mars` | Luther infrastructure tool wrapping Terraform, Ansible, and Packer with environment management. |
-| `pr` | Create PR with local tests, security review, and QA professor on test quality. |
-| `release` | Deploy to production via Vercel/MCP server. Tags, monitors, verifies health. |
-| `repo-setup` | Full repository onboarding: deep scan → CLAUDE.md → tailored skills. Run once per repo. |
+## Temp files
 
-**Also bundled:**
-- `agents/qa-professor.md` — QA professor agent for test quality review
-- `commands/dailire-mode-analysis.md` — Run 7 parallel failure mode analyses
-- `golang-guidance.md` — Standalone Go best practices reference (18KB)
-- `settings.json` — Default permissions, plugins, and status line config
+- Scratch files go in `.tmp/` in the project root; add `.tmp/` to `.gitignore`.
 
-**Project-specific skills** (not bundled here — live in their own repos):
-- `reddit` — Daily Reddit engagement workflow (lives in `iamsamwood/bd`)
+## Luther dev tooling
 
-## Luther Dev Tooling
-
-These tools are required for working with Luther infrastructure. See [SETUP_ENV.md](SETUP_ENV.md) for full install instructions.
-
-| Tool | Install | Purpose |
-|------|---------|---------|
-| `speculate` | `go install github.com/akerl/speculate/v2@latest` | AWS role assumption with MFA |
-| `aws-cred-setup` | `luthersystems/aws-cred-setup` | Configure AWS MFA credentials |
-| `luther-shell-helpers` | `luthersystems/luther-shell-helpers` | `aws_login`, `aws_jump`, `credcopy/credpaste`, `kns` |
-| `mars` | `luthersystems/mars` | Terraform/Ansible/Packer in Docker |
-| `switch_accounts.sh` | `luthersystems/shell-scripts` | GitHub account switching (`luther`/`toko`) |
-| `firecrawl` | `npm install -g firecrawl-cli` | Web scraping and search |
-| `mosh` + `tmux` | brew/apt | Persistent VPN shell sessions |
-| `tailscale` | tailscale.com | VPN mesh network (`vpn` alias) |
-
-**Key shell functions** (from `luther-shell-helpers`):
-- `aws_login <role>` — MFA-secured AWS session (default role: `dev`)
-- `aws_jump <account> <role>` — Assume role in another account (uses `~/.aws/accounts` map)
-- `aws_console <account>` — Open AWS console in browser for an account
-- `credcopy` / `credpaste` — Copy/paste AWS creds via clipboard
-- `credhop` / `creddrop` — Stack-based role switching
-- `kns` / `setkns` — Kubectl with namespace management
-- `vpn` — `mosh luther-vpn -- tmux new-session -A -s main`
-
-## CLI Tools Available
-
-Modern Rust/Go replacements are installed. Prefer these over legacy equivalents:
-
-| Use this | Instead of | Notes |
-|----------|-----------|-------|
-| `rg` (ripgrep) | `grep` | 10-100x faster, respects `.gitignore` |
-| `fd` | `find` | Simpler syntax: `fd '\.go$'` |
-| `bat` | `cat` | Syntax highlighting, line numbers |
-| `eza` | `ls` | Git status, tree view (`eza --tree`) |
-| `delta` | `diff` | Syntax-highlighted git diffs (configured as git pager) |
-| `sd` | `sed` | Simpler: `sd 'from' 'to' file` |
-| `dust` | `du` | Visual disk usage tree |
-| `fzf` | — | Fuzzy finder (`Ctrl+R` history, `Ctrl+T` files) |
-| `zoxide` | `cd` | Frecency-based: `z proj` jumps to project dir |
-| `lazygit` | — | Terminal UI for git |
-| `lazydocker` | — | Terminal UI for Docker |
-| `jq` / `yq` | — | JSON / YAML processing |
-| `tree` | — | Directory tree view |
-
-**Kubernetes helpers** (from `luther-shell-helpers`):
-- `setkns <namespace>` — Set default kubectl namespace
-- `kns` — Show current namespace
-- `kns <command>` — Run kubectl with namespace preset (e.g., `kns get pods`)
-
-## Agent Compatibility (agent.md / CLAUDE.md)
-
-- When a project uses `agent.md` (e.g., for Kiro, Cursor, Windsurf, or other AI tools), symlink it to `CLAUDE.md` so all agents share the same instructions: `ln -sf CLAUDE.md agent.md` (or vice versa)
-- If a project already has an `agent.md` but no `CLAUDE.md`, create the symlink: `ln -sf agent.md CLAUDE.md`
-- If a project already has a `CLAUDE.md` but no `agent.md`, create the symlink: `ln -sf CLAUDE.md agent.md`
-- Keep one canonical file and symlink the other — never maintain two copies
-- Prefer `CLAUDE.md` as the canonical file when starting fresh
+See `SETUP_ENV.md` for install. Key tools: `speculate` (AWS role assumption w/ MFA), `aws-cred-setup` (MFA creds), `luther-shell-helpers`, `mars` (Terraform/Ansible/Packer in Docker).
+Shell helpers: `aws_login <role>` (MFA session, default `dev`), `aws_jump <account> <role>`, `aws_console <account>`, `setkns <ns>` / `kns` (kubectl namespace).
