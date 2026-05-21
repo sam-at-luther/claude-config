@@ -29,6 +29,7 @@
 - File issues in the correct repo. If a problem belongs to another repo, file the ticket there rather than patching in place.
 - Every ticket gets a GitHub issue. PR body references each (`Closes #N`); partial work updates the issue checklist instead.
 - Run the `pr` skill (rebase, QC gates) and `qa-professor` on PRs without being reminded. **End every task by linking the PR/URL.**
+- Reference PRs, issues, and URLs as clickable markdown links (`[#123](https://github.com/...)`), never bare numbers or plain text.
 - Use `gh` for remote ops; keep remotes on HTTPS so `gh auth` handles auth.
 - No orphan branches or unpushed commits — every branch has a PR (draft is fine).
 
