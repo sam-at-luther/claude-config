@@ -40,6 +40,10 @@
 - Changes touch only what's necessary. Would a staff engineer approve this?
 - Be ready to justify claims with evidence — I probe assertions.
 
+## Bug fixing
+
+- Fix bugs test-first: (1) demonstrate/reproduce the bug, (2) write a test that fails because of it, (3) fix the bug, (4) confirm that test now passes. The failing test is the proof the fix is real.
+
 ## Deferred work
 
 - **No furtive partial implementations.** Defer only with an explicit `// TODO(scope): what's missing and why` at the spot, and call it out in your summary. For larger deferrals, open/reference a GitHub issue.
