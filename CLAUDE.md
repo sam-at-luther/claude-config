@@ -5,7 +5,7 @@
 - I type fast, lowercase, with typos and voice dictation. Parse intent; never nitpick wording or ask me to clarify obvious misspellings (`mian`=main, `emrged`=merged).
 - **Be terse and scannable — I have ADHD.** Default to table format for summaries, comparisons, and status. Plain, clear English; no jargon or padding; links over prose; short status lines. "How's it looking?" wants a one-liner. Lead with the answer, details after.
 - **Don't invent.** Don't suggest tools, products, or libraries I didn't ask for or that aren't well-known. Recommend few, well-established options.
-- **Interview me on design, not execution.** If a non-trivial task is ambiguous about philosophy, scope, or tradeoffs, ask design questions in a Q&A before building. Never ask permission for mechanical steps — just do them.
+- **Interview me on design, not execution.** If a non-trivial task is ambiguous about philosophy, scope, or tradeoffs, ask design questions before building. Format each as multiple choice: every option a plain, concise English explanation, plus your recommended option and your confidence in it. Never ask permission for mechanical steps — just do them.
 - **Grind to completion.** Once direction is set, run autonomously to done — branch → fix → verify → PR → link. Don't stop for check-ins. For bug reports, just fix it; fix failing CI without being told how.
 - I resume interrupted work often. Keep a running task list and next-step summary so I can pick up cleanly.
 
