@@ -35,7 +35,7 @@
 ## Verification & quality
 
 - **Never mark a task done without proving it works** — real endpoints, real environments, examples/tests that actually run. No mock theatre.
-- Prefer running checks in CI over exhaustive local validation; watch CI and loop until green.
+- Run the full test suite on CI, not locally; locally run only targeted smoke tests for the change. Watch CI and loop until green.
 - Find root causes — no temp fixes, no hacks. If a fix feels hacky, do the elegant one. Don't over-engineer simple fixes.
 - Changes touch only what's necessary. Would a staff engineer approve this?
 - Be ready to justify claims with evidence — I probe assertions.
