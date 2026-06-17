@@ -10,13 +10,8 @@ Common Claude Code configuration, skills, and guidance for use across all projec
 | `golang-guidance.md` | Go best practices reference (types, errors, generics, testing) |
 | `settings.json` | Default permissions, plugins, and status line config |
 | `agents/qa-professor.md` | QA professor agent for test quality review |
-| `commands/dailire-mode-analysis.md` | 7-way parallel failure mode analysis |
 | `skills/create-repo-skills/` | Generate Claude Code skills for any repository |
-| `skills/email/` | Gmail management via `zele` CLI |
-| `skills/firecrawl/` | Web scraping, search, and research via Firecrawl CLI |
-| `skills/find-skills/` | Discover and install skills from the open ecosystem |
 | `skills/golang-guidance/` | Load Go best practices into a session |
-| `skills/grind/` | Automatically process `agent-ready` GitHub issues |
 | `skills/mars/` | Luther infrastructure tool (Terraform/Ansible/Packer) |
 | `skills/pr/` | Create PR with tests, security review, and QA professor |
 | `skills/release/` | Deploy to production (Vercel + MCP server) |

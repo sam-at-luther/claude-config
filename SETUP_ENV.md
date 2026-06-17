@@ -221,8 +221,6 @@ cd ~/work/src/github.com/sam-at-luther/claude-config
 
 This symlinks:
 - `~/.claude/CLAUDE.md` → global instructions
-- `~/.claude/skills/firecrawl` → web scraping/search skill
-- `~/.claude/skills/find-skills` → skill discovery
 - `~/.claude/skills/mars` → infrastructure tool skill
 
 ### Install Firecrawl CLI
