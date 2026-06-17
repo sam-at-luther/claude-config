@@ -1,0 +1,9 @@
+{
+  "name": "claude-config",
+  "description": "Dev-workflow skills (pr, release, repo-setup, create-repo-skills, golang-guidance, mars, google-docs, google-sheets) plus the qa-professor test-review agent. Shared across projects and Claude Code on the web.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Sam Wood"
+  },
+  "repository": "https://github.com/sam-at-luther/claude-config"
+}

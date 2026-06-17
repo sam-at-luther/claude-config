@@ -10,19 +10,32 @@ Common Claude Code configuration, skills, and guidance for use across all projec
 | `golang-guidance.md` | Go best practices reference (types, errors, generics, testing) |
 | `settings.json` | Default permissions, plugins, and status line config |
 | `agents/qa-professor.md` | QA professor agent for test quality review |
-| `commands/dailire-mode-analysis.md` | 7-way parallel failure mode analysis |
 | `skills/create-repo-skills/` | Generate Claude Code skills for any repository |
-| `skills/email/` | Gmail management via `zele` CLI |
-| `skills/firecrawl/` | Web scraping, search, and research via Firecrawl CLI |
-| `skills/find-skills/` | Discover and install skills from the open ecosystem |
 | `skills/golang-guidance/` | Load Go best practices into a session |
-| `skills/grind/` | Automatically process `agent-ready` GitHub issues |
 | `skills/mars/` | Luther infrastructure tool (Terraform/Ansible/Packer) |
 | `skills/pr/` | Create PR with tests, security review, and QA professor |
 | `skills/release/` | Deploy to production (Vercel + MCP server) |
 | `skills/repo-setup/` | Full repo onboarding: scan → CLAUDE.md → skills |
 | `SETUP_ENV.md` | Full environment reconstitution guide |
 | `setup.sh` | One-command install script |
+
+## Use as a plugin (Claude Code on the web)
+
+This repo is also a Claude Code **plugin marketplace** (`.claude-plugin/`), so the same
+skills/agents work in cloud sessions where local symlinks don't reach. A consuming repo
+enables it in its `.claude/settings.json`:
+
+```jsonc
+"extraKnownMarketplaces": {
+  "claude-config": { "source": { "source": "github", "repo": "sam-at-luther/claude-config" } }
+},
+"enabledPlugins": { "claude-config@claude-config": true }
+```
+
+Because this repo is **private**, Claude Code on the web needs a read-only GitHub token to
+fetch it — set a fine-grained PAT scoped to `sam-at-luther/claude-config` (contents: read)
+as a `GH_TOKEN` environment variable in the cloud environment. Locally you keep using the
+symlinks below; the plugin namespaces its skills (`claude-config:pr`) so they coexist.
 
 ## Quick Setup
 
