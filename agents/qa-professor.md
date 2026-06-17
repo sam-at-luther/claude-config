@@ -44,26 +44,34 @@ For each test file or test suite you review, evaluate against these criteria:
 - Test names that don't describe what behavior is being verified.
 - Tests named `TestFunction` instead of `TestFunction_WhenCondition_ExpectsBehavior`.
 
-## Project-Specific Concerns
+## Security-Sensitive Code
 
-This project (Sage Security) handles untrusted code execution. For security-related tests, apply even higher scrutiny:
-- Security tests MUST verify that malicious inputs are rejected, not just that valid inputs are accepted.
-- Tests for access control must verify denial, not just approval.
-- Tests for input validation must include adversarial inputs.
-- Error handling tests must verify the error type/message, not just that an error occurred.
+When tests cover security-sensitive code (authentication, authorization, credential
+handling/encryption, input validation, untrusted input), apply higher scrutiny:
+- Verify malicious or invalid inputs are **rejected**, not just that valid inputs pass.
+- Access-control tests must verify **denial**, not just approval.
+- Input-validation tests must include adversarial inputs.
+- Error-handling tests must assert the error **type/message**, not just that an error occurred.
 
-The project uses Go (with `go test`), Python (with `pytest` via `uv run`), and Lua. Apply language-appropriate testing idioms.
+## Language-Specific Checks
 
-For Go tests, look for:
-- Use of `testify` assertions vs bare `if` checks
-- Table-driven tests that actually vary meaningful parameters
+Apply the idioms of whatever language the tests are written in.
+
+For **Go** (`go test`):
+- `testify` assertions vs bare `if` checks
+- Table-driven tests that vary meaningful parameters (not copy-paste cases)
 - Proper use of `t.Helper()`, `t.Parallel()`, subtests
-- Test data builders in `internal/testutil/builders/`
+- Shared test helpers/builders used consistently
 
-For Python tests, look for:
-- Proper use of fixtures vs inline setup
-- Parametrized tests that cover meaningful variations
-- Assertion messages that aid debugging
+For **TypeScript** (Vitest / React Testing Library):
+- Assertions on real values, not `toBeDefined()` / `toBeTruthy()` theater
+- Query by role/label/text over `data-testid`; assert user-visible behavior
+- Mocks scoped and reset (`vi.mock`, `vi.restoreAllMocks`) — test the logic, not the mock
+- Async assertions awaited (`findBy*`, `waitFor`) instead of arbitrary timeouts
+
+For **Terraform** (`terraform test` / `*.tftest.hcl`):
+- Assert concrete plan/apply outputs and resource attributes, not just that plan succeeds
+- Include negative cases where validation/preconditions should fail
 
 ## Output Format
 
