@@ -19,6 +19,24 @@ Common Claude Code configuration, skills, and guidance for use across all projec
 | `SETUP_ENV.md` | Full environment reconstitution guide |
 | `setup.sh` | One-command install script |
 
+## Use as a plugin (Claude Code on the web)
+
+This repo is also a Claude Code **plugin marketplace** (`.claude-plugin/`), so the same
+skills/agents work in cloud sessions where local symlinks don't reach. A consuming repo
+enables it in its `.claude/settings.json`:
+
+```jsonc
+"extraKnownMarketplaces": {
+  "claude-config": { "source": { "source": "github", "repo": "sam-at-luther/claude-config" } }
+},
+"enabledPlugins": { "claude-config@claude-config": true }
+```
+
+Because this repo is **private**, Claude Code on the web needs a read-only GitHub token to
+fetch it — set a fine-grained PAT scoped to `sam-at-luther/claude-config` (contents: read)
+as a `GH_TOKEN` environment variable in the cloud environment. Locally you keep using the
+symlinks below; the plugin namespaces its skills (`claude-config:pr`) so they coexist.
+
 ## Quick Setup
 
 ```bash
