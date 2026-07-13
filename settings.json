@@ -40,6 +40,19 @@
       "mcp__insideout*"
     ]
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); cmd=$(printf %s \"$input\" | jq -r '.tool_input.command // \"\"'); printf %s \"$cmd\" | grep -qE '(^|[[:space:];&|]+)sfw[[:space:]]' && exit 0; printf %s \"$cmd\" | grep -qE '(npm|yarn|pnpm)[[:space:]]+(install|i|add|ci|exec|dlx)|npx[[:space:]]+[^-]|uvx[[:space:]]+[^-]|(pip|pip3|uv)[[:space:]]+(pip[[:space:]]+)?(install|add|tool[[:space:]]+install|run)|cargo[[:space:]]+(install|add)' && { printf 'Socket Firewall: prefix with sfw — try: sfw %s\\n(Install: npm i -g sfw)\\n' \"$cmd\" >&2; exit 2; }; exit 0"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "input=$(cat); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir // .cwd'); if [ -n \"$cwd\" ] && [ -d \"$cwd/.git\" ]; then cd \"$cwd\" 2>/dev/null; fi; branch=$(git -c core.filesRefLockTimeout=0 branch --show-current 2>/dev/null || echo ''); if [ -n \"$branch\" ]; then printf '⎇ %s' \"$branch\"; fi"
